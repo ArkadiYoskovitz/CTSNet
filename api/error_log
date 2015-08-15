@@ -1,0 +1,2 @@
+[13-Aug-2015 19:47:39 UTC] PHP Fatal error:  Undefined class constant 'PATAM_STR' in /home/arkadictsnet/public_html/api/controller/articleController.php on line 462
+[13-Aug-2015 19:48:12 UTC] PHP Fatal error:  Undefined class constant 'PATAM_STR' in /home/arkadictsnet/public_html/api/controller/articleController.php on line 462

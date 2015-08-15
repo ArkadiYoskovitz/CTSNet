@@ -156,9 +156,8 @@ class articleController extends baseController {
 			 */	
 			case 	($request->getMethod() == 'POST') && ($request->getVerb() == null) && 
 				(intval($request->getArgs()[0])) && (count($request->getArgs()) == 1):
-				
-				$inputJSON = file_get_contents('php://input');
-				$input = json_decode( $inputJSON, TRUE );
+
+				$input = $_POST;
 
 				$articles = $this -> selectArticleByID(intval($request->getArgs()[0]));									
 				if($articles['article'] != false){
@@ -169,12 +168,15 @@ class articleController extends baseController {
 					if((intval($upload_response['code']) == 201) && (isset($upload_response['data']))) {
 						$input['image_path'] = $upload_response['data'];
 					}
-					
-					$this -> updateArticleByID(intval($request->getArgs()[0]),$input['articalEditTitle'],$input['articalEditHeader'],
-			  					   $input['articalEditBody'],$input['articalEditConclusion'],$input['articalEditSummary'],
-			  					   $input['image_path'],$input['article_writer_id'],4,$input['articalEditCategory']);
+					$data['a'] = $this -> selectArticleByID(intval($request->getArgs()[0]));
+					$data['b'] = $this -> updateArticleByID(intval($request->getArgs()[0]),$input['articalEditTitle'],
+								$input['articalEditHeader'],$input['articalEditBody'],$input['articalEditConclusion'],
+			  					$input['articalEditSummary'],$input['image_path'],$input['article_writer_id'],4,
+			  					$input['articalEditCategory']);
 			  					   
-					$data = $upload_response ;//$this -> selectArticleByID(intval($request->getArgs()[0]));
+					$data['c'] = $this -> selectArticleByID(intval($request->getArgs()[0]));
+					$data['d'] = $upload_response;
+					$data['e'] = $input;
 					$code = 200;
 				} else {
 					$data = null;

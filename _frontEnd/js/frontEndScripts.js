@@ -1,11 +1,4 @@
 // ===================================================
-// Global variables
-// ===================================================
-var useComment;
-//localStorage.removeItem('user');
-//localStorage.getItem('user');
-//localStorage.setItem('user',user);
-// ===================================================
 // Helper Functions - Date formatter
 // ===================================================
 function stringToDate(dateString) {
@@ -156,6 +149,36 @@ function bindImagePreview() {
 		$('#previewing').attr('height', '250px');
 	};
 }
+// Manage
+function bindArticlesManageDeleteEvent() {
+	$('.articleDelete').bind( "click", function(e) {
+		localStorage.setItem( 'useArticleID', e.currentTarget.hash.replace('#','') );
+	
+		// call delete on server and reload page
+		$.ajax({
+			url	: 'http://appctsnet.info/api/article/'+ localStorage.getItem('useArticleID'),
+			type	: 'DELETE',
+			cache	: false,	
+			contentType : false,
+			processData : false,
+			success: function(data, textStatus, jqXHR) {
+				localStorage.removeItem( 'useArticleID' );
+				loadArticlesForUser( localStorage.getItem('user') );
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				alert('delete failed');
+				document.title='error'; 
+			}
+		});
+	});
+}
+function bindArticlesManageEditEvent() {
+	$('.articleEdit').bind( "click", function(e) {
+		localStorage.setItem( 'useArticleID', e.currentTarget.hash.replace('#','') );
+		$.mobile.pageContainer.pagecontainer("change", "#pageArticaleEdit");
+	});
+}
+
 // ===================================================
 // Bind events
 // ===================================================
@@ -169,6 +192,11 @@ $(document).bind( "pagebeforeshow" , function(event,ui){
 	if((targetPage !== null) && (targetPage === 'pageByCategory')) {
 		if((localStorage.getItem('useCategory') !== null) && (localStorage.getItem('useCategory') !== undefined)) {
 			loadArticlesForCategory( localStorage.getItem('useCategory') );
+		}
+	}
+	if((targetPage !== null) && (targetPage === 'pageManageArticles')) {
+		if((localStorage.getItem('user') !== null) && (localStorage.getItem('user') !== undefined)) {
+			loadArticlesForUser( localStorage.getItem('user') );
 		}
 	}
 	if((targetPage !== null) && (targetPage === 'pageArticale')) {
@@ -185,17 +213,17 @@ $(document).bind( "pagebeforeshow" , function(event,ui){
 		if((localStorage.getItem('user') !== null) && (localStorage.getItem('user') !== undefined)) {
 			if((localStorage.getItem('useArticleID') !== null) && (localStorage.getItem('useArticleID') !== undefined)) {
 				// edit an article
-				console.log('edit an article');
+				console.log('EDIT AN ARTICLE');
 				// load article into form
-				/*
-				clearArticleForm();
-				*/
+				loadArticleForm( localStorage.getItem('useArticleID') );
 			} else {
 				// write an article
 				console.log('WRITE AN ARTICLE');
 				// clear article into form
 				clearArticleForm();
 			}
+		} else {
+			$(':mobile-pagecontainer').pagecontainer('change', '#pageLanding', { reload: false });
 		}
 	}
 	if((targetPage !== null) && (targetPage === 'pageMailConfirm')) {
@@ -226,9 +254,9 @@ $(document).bind( "pagebeforeshow" , function(event,ui){
 		});
 		$('#articleMenu').empty();
 		$("#articleMenu").append('<ul id="articleMenuElements" class="ui-grid-a"></ul>');
-//		$("#articleMenuElements").append('<li class="ui-block-b">'+
-//						 '<a class="ui-link ui-btn" href="#pageManageArticles">Manage your articales</a></li>');
-		$('#articleMenuElements').append('<li class="ui-block">'+
+		$("#articleMenuElements").append('<li class="ui-block-b">'+
+						 '<a class="ui-link ui-btn" href="#pageManageArticles">Manage your articales</a></li>');
+		$('#articleMenuElements').append('<li class="ui-block-b">'+
 						 '<a class="ui-link ui-btn" href="#pageArticaleEdit">Post an articale</a></li>');
 	    	$('#articleMenu').navbar();
 	} else {
@@ -254,164 +282,3 @@ $(document).on('pagechange', 'div:jqmData(role="page")', function(){
     console.log($.mobile.urlHistory.stack);
 });
 */
-// ===================================================
-// Refresh news feed - GET data function
-// ===================================================
-function refreshNews() {
-	$.mobile.loading( "show" );
-	$.ajax({
-		url	: 'http://appctsnet.info/api/article/news',
-	        type	: 'GET',
-	        dataType: 'json',
-	        async	: true,
-	        success	: function (result) {
-			siteNewsSummary.parseJSONP(result);
-	        	$.mobile.loading( "hide" );
-		},
-	        error	: function (request,error) {
-	        	alert('Network error has occurred please try again!');
-	        	$.mobile.loading( "hide" );
-		}
-	});
-};
-// ===================================================
-// Refresh news feed - Parser 
-// ===================================================
-var siteNewsSummary = {  
-    parseJSONP:function(result){  
-    	var data = result['data']
-        $('#artical-listing-main').empty();        
-        $.each(data, function(i, section) {
-		$('#artical-listing-main').append(
-		'<li data-role="list-divider" data-theme="b" class="customListDividor"><a class="categoryTransition" href="#'+i+'">'+i+'</a></li>');
-	        $.each(section, function(i, row) {
-		        var srclink;
-		        if(!row['image_path']) {
-		        	 srclink="images/noimage.png";
-		        } else {
-		        	 srclink = row['image_path'];
-		        }
-			$('#artical-listing-main').append(
-			'<li><a class="articleTransition" href="#'+row['id']+'"><img src="'+srclink+'" class="ui-li-thumb"><h2>' + row['title'] + 
-			'</h2><p>' + row['summary'] + '</p><p class="ui-li-aside">'+ stringToDate(row['date_last_modification']) +'</p></a></li>');
-	        });
-	});
-        $('#artical-listing-main').listview('refresh');
-        bindArticleViewTransitionEvent();
-        bindCategoryViewTransitionEvent();
-    }
-}
-// ===================================================
-// Articles by categoryID - GET data function
-// ===================================================
-function loadArticlesForCategory(categoryID) {
-	$.ajax({
-		url	: 'http://appctsnet.info/api/article/search?category='+ categoryID,
-	        type	: 'GET',
-	        dataType: 'json',
-	        async	: true,
-	        success	: function (result) {
-	        	categoryView.parseJSONP(result);
-		},
-	        error	: function (request,error) {
-	        	alert('Network error has occurred please try again!');
-		}
-	});
-};
-// ===================================================
-// Articles by categoryID - Parser 
-// ===================================================
-var categoryView = {  
-    parseJSONP:function(result){  
-    	var data = result['data'];
-    	var articles = data['article'];
-        $('#artical-listing').empty();        
-        $.each(data, function(i, section) {
-		$('#artical-listing').append(
-			'<li data-role="list-divider" data-theme="b" class="customListDividor">'+localStorage.getItem('useCategory')+'</li>');
-	        $.each(section, function(i, row) {
-	        	var srclink = (!row['image_path']) ? "images/noimage.png" : row['image_path'];
-			$('#artical-listing').append(
-			'<li><a class="articleTransition" href="#'+row['id']+'"><img src="'+srclink+'" class="ui-li-thumb"><h2>' + row['title'] + 
-			'</h2><p>' + row['summary'] + '</p><p class="ui-li-aside">'+ stringToDate(row['date_last_modification']) +'</p></a></li>');
-	        });
-	});
-        $('#artical-listing').listview('refresh');
-        $('#pageByCategoryTitle').text( localStorage.getItem('useCategory') );
-        bindArticleViewTransitionEvent();
-    }
-}
-// ===================================================
-// Article view by ID - GET data function
-// ===================================================
-function loadArticleView(articleID) {
-	$.ajax({
-		url	: 'http://appctsnet.info/api/article/'+ articleID,
-	        type	: 'GET',
-	        dataType: 'json',
-	        async	: true,
-	        success	: function (result) {
-	        	articleView.parseJSONP(result);
-		},
-	        error	: function (request,error) {
-	        	alert('Network error has occurred please try again!');
-		}
-	});
-};
-// ===================================================
-// Article view by ID - Parser 
-// ===================================================
-var articleView = {  
-    parseJSONP:function(result){  
-    	var article = result['data']['article'];
-    	var metaDataString = '';
-	metaDataString += 'Writer		: ' + article['userNameLast'	  	] + ' ' + article['userNameFirst'] + '<br>';
-	metaDataString += 'Last modification 	: ' + article['date_last_modification'	] + '<br>';
-    	$('#viewArticalTitleSum').text(article['title']);
-    	$('#viewArticalTitle'	).text(article['title']);
-    	$('#viewArticalMetaData').html(metaDataString);
-	if(article['image_path']) {
-    		$('#viewArticalSummaryImage').attr("src",article['image_path']);
-    	} else {
-    	    	$('#viewArticalSummaryImage').attr("src","images/noimage.png");
-    	}
-	$('#viewArticalHeader'	).text(article['header']);
-    	$('#viewArticalBody'	).text(article['body']);
-    	$('#viewArticalConclusion').text(article['conclusion']);    	    	    	    	    	
-    }
-}
-// ==============================================================
-// Comments view for Article - by Article ID - GET data function
-// ==============================================================
-function loadCommentsViewByArticleID(articleID) {
-	$.ajax({
-		url	: 'http://appctsnet.info/api/article/'+ articleID + '/comments',
-	        type	: 'GET',
-	        dataType: 'json',
-	        async	: true,
-	        success	: function (result) {
-	        	commentsView.parseJSONP(result);
-		},
-	        error	: function (request,error) {
-	        	alert('Network error has occurred please try again!');
-		}
-	});
-};
-// ===================================================
-// Comments view for Article - by Article ID - Parser 
-// ===================================================
-var commentsView = {
-    parseJSONP:function(result) {
-    	var comments = result['data']['comments'];
-    	var avatar;
-    	$('#comments-listing').empty();
-    	$.each(comments, function(index, comment) {
-		avatar = comment['userNameLast'] + ' ' + comment['userNameFirst'];
-		$('#comments-listing').append(
-			'<li data-icon="false"><p class="comment"><b class="avatar">'+avatar+'</b>&nbsp;said => ' + 
-			comment['comment_content'] + '&nbsp;</p></li>');
-    	});
-    	$('#comments-listing').listview('refresh');
-    	$('#pageCommentsTitle').text(  comments[0]['article_title'] );
-    }
-}

@@ -42,9 +42,7 @@ function event_ctsNet_Artical_Edit() {
 			error.appendTo(element.parent().prev());
 		},
 		submitHandler: function (form) {
-			//localStorage.removeItem('articleState')
-			//localStorage.setItem('articleState',12);
-			var state = localStorage.getItem('articleState');
+			var state = localStorage.getItem('useArticleID');
 			console.log(state);
 			if(!state) {
 				console.log('NEW ARTICLE');
@@ -93,16 +91,21 @@ function articleHandlerNew() {
 // Event Handler - update exsisting article
 // ===================================================
 function articleHandlerUpdate() {
-
+	
 	var userinfo = jQuery.parseJSON( localStorage.getItem('user') );
+	var userID = '' + userinfo['id'];
+	var helper = '<input type="text" name="article_writer_id" id="article_writer_id">';
+	
+	$('#ctsNet_Artical_Edit').append(helper);
+	$('#article_writer_id').val( userID );
+	
 	var fData = new FormData( $('#ctsNet_Artical_Edit')[0] );
-	fData.append('article_writer_id', userinfo['id'] );
+	$('#article_writer_id').remove();
+	
 	$.ajax({
 		url	: 'http://appctsnet.info/api/article/'+ localStorage.getItem('useArticleID'),
 		type	: 'POST',
 		data	: fData ,
-		dataType: 'json',
-		mimeType: 'multipart/form-data',
 		cache	: false,	
 		contentType : false,
 		processData : false,

@@ -11,11 +11,25 @@
 		<link rel="stylesheet" type="text/css" href="_frontEnd/themes/themeCTSNet.min.css" />
 		<link rel="stylesheet" type="text/css" href="_frontEnd/themes/custom.css" />
 		<script type="text/javascript" src="_frontEnd/js/jquery/jquery-1.11.1.min.js" ></script>
-<!-- 	-->	<script type="text/javascript" src="_frontEnd/js/jquery/jquery.mobile-1.4.5.min.js" ></script> 			<!-- -->
-<!--	--	<script type="text/javascript" src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js" ></script>	!-- -->
+<!-- 	-- 	<script type="text/javascript" src="_frontEnd/js/jquery/jquery.mobile-1.4.5.min.js" ></script> 			 !-- -->
+<!--	-->	<script type="text/javascript" src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js" ></script>	<!-- -->
 		<script type="text/javascript" src="_frontEnd/js/jquery/jquery.validate.min.js" ></script>
 		<script type="text/javascript" src="_frontEnd/js/frontEndValidation.js"	></script>
+		<script type="text/javascript" src="_frontEnd/js/frontEndListBuilder.js"></script>
+		<script type="text/javascript" src="_frontEnd/js/frontEndPageBuilder.js"></script>
 		<script type="text/javascript" src="_frontEnd/js/frontEndScripts.js" ></script>
+		<script type="text/javascript">
+			$('div').live('pagehide', function(event, ui){
+				var page = jQuery(event.target);
+				console.log( page );
+				//alert('point 6875654');
+				if(page.attr('data-cache') == 'never'){
+					//alert('removing jqm history page');
+					page.remove();
+					console.log( page );
+				};
+			});
+		</script>
 	</head>
 	<body>
 		<!-- CTSNet landing page -->
@@ -73,14 +87,17 @@
 
 			<div role="main" class="ui-content my-page">
 				<ul id="my-articales-listing" data-role="listview"  data-filter="true" data-inset="false" data-icon="false">
-					<li><p><a class="deleteAction" href="#" >delete</a>&nbsp;<a class="editAction"href="#">edit</a>&nbsp;<b>some stuff</b></p></li>
-					<li><p><a class="deleteAction" href="#" >delete</a>&nbsp;<a class="editAction"href="#">edit</a>&nbsp;<b>some stuff</b></p></li>
 				</ul>
 
 				<br/>
 			</div><!-- /content -->
 			
 			<div data-role="footer" data-position="fixed">
+				<div data-role="navbar">
+					<ul class="ui-grid-a">
+						<li class="ui-block"><a class="ui-link ui-btn" href="#pageArticaleEdit">Post an articale</a></li>
+				    	</ul>
+			  	</div>
 			  	<h4>CTSNet. Copyright &copy; 2015 Arkadi Yoskovitz &amp; Amir Brot All rights reserved</h4>
 			</div><!-- /footer -->
 		</div><!-- /page -->
@@ -116,7 +133,7 @@
 		</div><!-- /page -->
 
 		<!-- CTSNet Artical editing page -->
-		<div data-role="page" id="pageArticaleEdit">
+		<div data-role="page" id="pageArticaleEdit" data-cache="never">
 
 			<div data-role="header">
 				<a href="#" class="ui-btn-left" data-rel="back" data-icon="back">Back</a>
