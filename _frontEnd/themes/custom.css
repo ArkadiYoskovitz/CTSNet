@@ -1,0 +1,83 @@
+/* Override jquery css */
+.ui-listview .ui-li-static > p {
+    display: flex;
+    white-space: normal;
+}
+.ui-li-thumb, .ui-li-icon {
+    left: 1px;
+    max-height: 80px;
+    max-width: 80px;
+    position: absolute;
+    top: 0;
+}
+/* Validation CSS */
+label.error {
+	color		: red	;
+	font-size	: 16px	;
+	font-weight	: normal;
+	line-height	: 1.4	;
+	margin-top	: 0.5em	;
+	width		: 100%	;
+	float		: none	;
+}
+@media screen and (orientation: portrait){
+	 label.error { margin-left: 0; display: block; }
+}
+ 
+@media screen and (orientation: landscape){
+	 label.error { display: inline-block; }
+}
+em { color: red; font-weight: bold;padding-right: .25em; }
+/* File upload */
+#image_preview{
+	height: 260px;
+	text-align: center;
+}
+#imgWarp {
+	text-align: center;
+}
+#viewArticalSummaryImage {
+	display: inline !important;
+	height: 250px;
+	width: 250px;
+}
+#previewing {
+	display: inline !important;
+	height: 250px;
+	width: 250px;
+}
+#articalEditImage {
+	color: red;
+	background-color: #8BF1B0;
+}
+#error {
+	color:red;
+}
+#error_message {
+	color:blue;
+}
+/* Custom elements CSS */
+.custom_textArea {
+	 height: auto !important; /* !important is used to force override. */
+}
+.customListDividor {
+	text-transform:capitalize;
+}
+.pageTitle {
+	text-transform:capitalize;
+}
+.articalElement {
+	text-align: center; 
+}
+.avatar	{ 
+	text-transform:capitalize; 
+}
+.comment{ 
+	margin:5px; padding:0; 
+}
+/*************************************************************/
+#viewArticalMetaData 	{ fontSize: 20px; }
+#viewArticalTitle 	{ text-align: center; }
+#viewArticalHeader 	{ text-align: left; }
+#viewArticalBody 	{ text-align: left; }
+#viewArticalConclusion 	{ text-align: left; }
